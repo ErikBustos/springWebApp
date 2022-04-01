@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.app.springboot.wrb.springbootfirstwebapplication.web.service.LoginService;
+import com.app.springboot.wrb.springbootfirstwebapplication.model.Todo;
 import com.app.springboot.wrb.springbootfirstwebapplication.web.service.TodoService;
 
 import java.util.Date;
@@ -32,10 +32,16 @@ public class TodoController {
 	public String showAddTodoPage(ModelMap model) {	
 		return "add-todo";
 	}
+	
+	@RequestMapping(value="/delete-todo", method= RequestMethod.GET)
+	public String deleteTodo(@RequestParam int id) {
+		service.deleteTodo(id);
+		return "redirect:/todolist";
+	}
 
 	@RequestMapping(value="/add-todo", method= RequestMethod.POST)
-	public String addTodo(ModelMap model, @RequestParam String desc) {	
-		service.addTodo((String) model.get("name"), desc, new Date(), false);
+	public String addTodo(ModelMap model, Todo todo) {	
+		service.addTodo((String) model.get("name"), todo.getDesc(), new Date(), false);
 		return "redirect:/todolist";
 	}
 }
