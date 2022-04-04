@@ -9,15 +9,22 @@
 
 <body>
 	<div class="container">
-		<form method="post">
-			<fieldset class="form-group">
-				<label>Description</label> 
-				<input name="desc" type="text"
-					class="form-control" required="required"/>
-			</fieldset>
 
-			<button type="submit" class="btn btn-success">Add</button>
-		</form>
+		<form:form method="post" modelAttribute="todo">
+			<fieldset class="form-group">
+				<form:label path="desc">Description</form:label>
+				<form:input path="desc" type="text" class="form-control" required="required"/>
+			</fieldset>
+		</form:form>
+
+		@Size(min = 10, message = "Enter atleast 10 Characters.")
+		
+		@Valid Todo todo, BindingResult result
+
+		if (result.hasErrors())
+			return "todo";
+		
+		<form:errors path="desc" cssClass="text-warning" />
 	</div>
 
 	<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
