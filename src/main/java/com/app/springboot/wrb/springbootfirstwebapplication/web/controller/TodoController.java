@@ -2,6 +2,8 @@ package com.app.springboot.wrb.springbootfirstwebapplication.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,7 +24,6 @@ import java.util.Date;
 import javax.validation.Valid;
 
 @Controller
-@SessionAttributes("name")
 public class TodoController {
 	
 	@Autowired
@@ -38,18 +39,24 @@ public class TodoController {
 		
 	@RequestMapping(value="/todolist", method= RequestMethod.GET)
 	public String showLoginPage(ModelMap model) {
-		String name = getLoggedinUserName(model);
+		String name = getLoggedinUserName();
 		model.put("todos", service.retrieveTodos(name));
 		return "todolist";
 	}
 
-	private String getLoggedinUserName(ModelMap model) {
-		return (String) model.get("name");
-	}
+	private String getLoggedinUserName() {
+		Object principal = SecurityContextHolder.getContext()
+				.getAuthentication().getPrincipal();
+
+		if(principal instanceof UserDetails) {
+			return ((UserDetails)principal).getUsername();
+		}
+		return principal.toString();
+	}	
 
 	@RequestMapping(value="/add-todo", method= RequestMethod.GET)
 	public String addTodo(ModelMap model) {	
-		model.addAttribute("todo", new Todo(0,getLoggedinUserName(model), "Default Description", new Date(), false));
+		model.addAttribute("todo", new Todo(0,getLoggedinUserName(), "Default Description", new Date(), false));
 		return "add-todo";
 	}
 	
@@ -72,7 +79,7 @@ public class TodoController {
 		if(bindingResult.hasErrors()) {
 			return "add-todo";
 		}
-		todo.setUser(getLoggedinUserName(model));
+		todo.setUser(getLoggedinUserName());
 		
 		service.updateTodo(todo);
 		
@@ -84,7 +91,7 @@ public class TodoController {
 		if(bindingResult.hasErrors()) {
 			return "add-todo";
 		}
-		service.addTodo(getLoggedinUserName(model), todo.getDesc(), todo.getTargetDate(), false);
+		service.addTodo(getLoggedinUserName(), todo.getDesc(), todo.getTargetDate(), false);
 		return "redirect:/todolist";
 	}
 }
