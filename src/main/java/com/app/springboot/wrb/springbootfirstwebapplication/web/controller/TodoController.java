@@ -80,7 +80,7 @@ public class TodoController {
 		if(bindingResult.hasErrors()) {
 			return "add-todo";
 		}
-		service.addTodo((String) model.get("name"), todo.getDesc(), new Date(), false);
+		service.addTodo((String) model.get("name"), todo.getDesc(), todo.getTargetDate(), false);
 		return "redirect:/todolist";
 	}
 }
